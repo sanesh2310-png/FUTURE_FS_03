@@ -1,8 +1,8 @@
-# FUTURE_FS_03: Brew & Bloom Café Website and Live Pitch
+# FUTURE_FS_03: Brew & Bloom Café Website 
 
 A fast, mobile-friendly website for **Brew & Bloom**, a café on Church Street, Bengaluru. Built with plain HTML, CSS and JavaScript (no build step), for Future Interns Task 3.
 
-**Live demo:** _add your link here_  ·  **Pitch:** see [PITCH.md](PITCH.md)
+  **Pitch:** see [PITCH.md](PITCH.md)
 
 ## What the website does
 - **Menu with prices**, in categories (click any item for size, milk and extras): hot coffee, iced and cold brew, matcha and more, bites, desserts
@@ -25,11 +25,6 @@ The `images` folder already holds a photo for every menu item, the hero, the sto
 ## Run it
 Double-click `index.html`, or use the VS Code **Live Server** extension. No install needed.
 
-## Edit it
-Everything (name, phone, menu, prices, builder options, loyalty rules, hours) is in `js/config.js`.
 
-## Deploy free on GitHub Pages
-1. Push this folder to a public GitHub repo named `FUTURE_FS_03`.
-2. On GitHub open **Settings, then Pages**.
-3. Choose **Deploy from a branch**, branch `main`, folder `/ (root)`, then Save.
-4. After a minute the site is live at `https://YOUR-USERNAME.github.io/FUTURE_FS_03/`.
+
+
