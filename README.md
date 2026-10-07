@@ -17,11 +17,6 @@ A fast, mobile-friendly website for **Brew & Bloom**, a café on Church Street, 
 ## Photos
 The `images` folder already holds a photo for every menu item, the hero, the story section, the parallax band and a 12-photo gallery. To swap any photo, save a new .jpg with the same name in `images`, or open **photos.html** in Edge or Chrome and drag a photo onto its row. **PHOTOS.md** lists every file. The photos are stock photos for the demo: replace them with the café's own before launch.
 
-## Important notes
-- **All prices, hours and menu items are SAMPLE data.** Confirm them with the owner and edit `js/config.js`.
-- The drink pictures are original illustrations drawn in code. For real photos, add them to `images/` and use `heroImage` or `gallery` (see config).
-- This is a front-end demo: the cart, orders and points are saved **in the visitor's browser** (localStorage), and orders reach the café through WhatsApp. A production version would add a backend and database.
-
 ## Run it
 Double-click `index.html`, or use the VS Code **Live Server** extension. No install needed.
 
