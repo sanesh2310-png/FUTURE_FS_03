@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Photo manager | Brew &amp; Bloom</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>.pc{width:100%;border-collapse:collapse;margin-top:14px}.pc th,.pc td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}.pc img{width:90px;height:64px;object-fit:cover;border-radius:10px;background:var(--soft);display:block}.pc code{background:var(--soft);padding:2px 8px;border-radius:6px;font-size:.82rem}.ok{color:#1f7a3d;font-weight:700}.miss{color:var(--accent);font-weight:700}.drop{border:2px dashed var(--line);border-radius:12px;padding:10px 14px;text-align:center;cursor:pointer;background:var(--card)}.drop.over{border-color:var(--accent);background:var(--soft)}.drop input{display:none}</style>
+</head>
+<body>
+  <main class="wrap" style="padding:36px 22px 80px">
+    <h1 style="font-size:2rem">Photo manager</h1>
+    <p class="muted"><b>1.</b> Click <b>Choose project folder</b> and select the folder that contains <code>index.html</code> (works in Edge and Chrome). <b>2.</b> Drag a photo onto each row, or click the row. Photos are resized and saved with the right name automatically. <b>3.</b> Open <code>index.html</code> and refresh. Delete <code>photos.html</code> before sharing the site.</p>
+    <p><button class="btn primary small" id="pick">Choose project folder</button> <span id="fstate" class="muted">No folder chosen. Photos will download instead; move them into the folder shown.</span></p>
+    <p><b id="sum"></b></p>
+    <table class="pc"><thead><tr><th>Preview</th><th>Photo</th><th>Saved as</th><th>Add photo</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table>
+  </main>
+  <script src="js/config.js"></script>
+  <script>
+    const C = window.CAFE, P = C.photos || {}, ext = P.ext || 'jpg';
+    const slots = [{ label: 'Hero photo (top of the home page)', path: P.hero || 'images/hero.jpg', max: 1800 }, { label: 'Our story photo', path: P.story || 'images/story.jpg', max: 1400 }];
+    C.gallery.forEach((g, i) => slots.push({ label: `Gallery ${i + 1}: ${g.title}`, path: g.src || `${P.galleryDir || 'images/gallery/'}${i + 1}.${ext}`, max: 1200 }));
+    C.menu.forEach((c) => c.items.forEach((i) => slots.push({ label: i.name, path: i.photo || `${P.menuDir || 'images/menu/'}${i.id}.${ext}`, max: 1000 })));
+    let root = null, found = 0;
+    const tbody = document.getElementById('rows'), sum = document.getElementById('sum'), fstate = document.getElementById('fstate');
+    const upd = () => { sum.textContent = `${found} of ${slots.length} photos added`; }; upd();
+    async function write(path, blob) {
+      const parts = path.split('/'); let dir = root;
+      for (const p of parts.slice(0, -1)) dir = await dir.getDirectoryHandle(p, { create: true });
+      const w = await (await dir.getFileHandle(parts[parts.length - 1], { create: true })).createWritable(); await w.write(blob); await w.close();
+    }
+    async function handle(slot, file, row) {
+      try {
+        const bmp = await createImageBitmap(file), k = Math.min(1, slot.max / Math.max(bmp.width, bmp.height));
+        const cv = document.createElement('canvas'); cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k);
+        cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
+        const blob = await new Promise((r) => cv.toBlob(r, 'image/jpeg', 0.84));
+        row.img.src = URL.createObjectURL(blob);
+        if (root) { await write(slot.path, blob); row.st.textContent = 'Saved to folder'; }
+        else { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = slot.path.split('/').pop(); a.click(); row.st.textContent = 'Downloaded: move into ' + slot.path.replace(/[^/]*$/, ''); }
+        if (row.st.className !== 'ok') { row.st.className = 'ok'; found++; upd(); }
+      } catch (e) { row.st.className = 'miss'; row.st.textContent = 'Could not use that file: ' + e.message; }
+    }
+    slots.forEach((slot) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><img alt="" src="${slot.path}"></td><td>${slot.label}</td><td><code>${slot.path}</code></td><td><label class="drop">Drop or click<input type="file" accept="image/*"></label></td><td class="miss">Missing</td>`;
+      tbody.append(tr);
+      const row = { img: tr.querySelector('img'), st: tr.querySelector('td:last-child') }, drop = tr.querySelector('.drop'), input = tr.querySelector('input');
+      row.img.onload = () => { if (row.st.className !== 'ok') { row.st.className = 'ok'; row.st.textContent = 'Found'; found++; upd(); } };
+      input.onchange = () => input.files[0] && handle(slot, input.files[0], row);
+      drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('over'); }; drop.ondragleave = () => drop.classList.remove('over');
+      drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove('over'); if (e.dataTransfer.files[0]) handle(slot, e.dataTransfer.files[0], row); };
+    });
+    document.getElementById('pick').onclick = async () => {
+      if (!window.showDirectoryPicker) { fstate.textContent = 'This browser cannot save to a folder. Use Edge or Chrome, or move the downloaded photos yourself.'; return; }
+      try { const h = await showDirectoryPicker({ mode: 'readwrite' }); await h.getFileHandle('index.html'); root = h; fstate.textContent = 'Folder connected: ' + h.name; }
+      catch (e) { fstate.textContent = 'Please choose the folder that contains index.html.'; }
+    };
+  </script>
+</body>
+</html>
