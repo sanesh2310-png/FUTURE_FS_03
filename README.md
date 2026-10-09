@@ -1,8 +1,10 @@
 # FUTURE_FS_03: Brew & Bloom Café Website 
 
-A fast, mobile-friendly website for **Brew & Bloom**, a café on Church Street, Bengaluru. Built with plain HTML, CSS and JavaScript (no build step), for Future Interns Task 3.
+A fast, mobile-friendly website for **Brew & Bloom**, a café on Church Street, Bengaluru. Built with plain HTML, CSS and JavaScript, for Future Interns Task 3.
 
   **Pitch:** see [PITCH.md](PITCH.md)
+
+  ## Live Site : https://brewbloom-cafe.onrender.com
 
 ## What the website does
 - **Menu with prices**, in categories (click any item for size, milk and extras): hot coffee, iced and cold brew, matcha and more, bites, desserts
